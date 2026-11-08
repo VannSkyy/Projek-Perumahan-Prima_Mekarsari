@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Info & Ulasan - Perumahan Prima Mekarsari Rajeg</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
+        html { scroll-behavior: smooth; }
+        :root { 
+            --bg: #f8fafc; 
+            --card: #ffffff; 
+            --primary: #2563eb; 
+            --text: #1e293b; 
+            --sub: #64748b; 
+            --gold: #f59e0b; 
+            --border: #e2e8f0; 
+        }
+        
+        body { 
+            background: var(--bg); 
+            color: var(--text); 
+            line-height: 1.6; 
+            padding-bottom: 0; 
+            margin: 0;
+            overflow-x: hidden; 
+        }
+        
+        .reveal { opacity: 0; transform: translateY(30px); transition: 0.6s ease; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+        
+        header { 
+            background: rgba(255, 255, 255, 0.85); 
+            border-bottom: 1px solid var(--border); 
+            position: sticky; 
+            top: 0; 
+            z-index: 100; 
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+        }
+
+        .nav { 
+            max-width: 1100px; 
+            margin: 0 auto; 
+            padding: 0.85rem 1.2rem; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            gap: 0.5rem;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: #eff6ff;
+            color: var(--primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.15);
+        }
+
+        .logo-text { 
+            font-weight: 800; 
+            color: #0f172a; 
+            font-size: 1rem; 
+            line-height: 1.2;
+            letter-spacing: -0.3px;
+        }
+
+        .logo-text span {
+            color: var(--primary);
+            display: inline-block;
+        }
+
+        .location-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.78rem; 
+            color: var(--sub);
+            background: #f1f5f9;
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-weight: 500;
+            border: 1px solid var(--border);
+            white-space: nowrap;
+        }
+
+        .location-badge .pulse-dot {
+            width: 6px;
+            height: 6px;
+            background: #10b981;
+            border-radius: 50%;
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+        }
+        
+        .container { max-width: 1100px; margin: 0 auto; padding: 1rem 1.5rem; }
+        
+        .banner { background: linear-gradient(135deg, #1e293b, #0f172a); color: white; padding: 2.5rem 1.8rem; border-radius: 16px; margin: 1rem 0 1.5rem; }
+        .banner h1 { font-size: 1.6rem; margin-bottom: 0.5rem; }
+        .banner p { color: #94a3b8; font-size: 0.95rem; }
+        
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
+        .card h2 { font-size: 1.25rem; margin-bottom: 1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.5rem; }
+        
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+        .info-item { background: #f8fafc; padding: 0.9rem; border-radius: 10px; border-left: 4px solid var(--primary); }
+        .info-item small { color: var(--sub); display: block; font-size: 0.78rem; }
+        .info-item span { font-weight: 600; font-size: 0.95rem; }
+        
+        .carousel-container { position: relative; width: 100%; height: 240px; border-radius: 12px; overflow: hidden; background: #000; }
+        .carousel-track { display: flex; height: 100%; transition: transform 0.4s ease; }
+        .carousel-slide { min-width: 100%; position: relative; cursor: pointer; }
+        .carousel-slide img { width: 100%; height: 100%; object-fit: cover; }
+        .carousel-caption { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.85)); color: white; padding: 1.2rem; }
+        .carousel-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; z-index: 10; font-size: 1.3rem; backdrop-filter: blur(4px); }
+        .carousel-btn.prev { left: 12px; } .carousel-btn.next { right: 12px; }
+        .carousel-dots { position: absolute; bottom: 12px; right: 16px; display: flex; gap: 6px; z-index: 10; }
+        .dot { width: 9px; height: 9px; background: rgba(255,255,255,0.5); border-radius: 50%; cursor: pointer; }
+        .dot.active { background: white; transform: scale(1.25); }
+        
+        .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; padding: 1rem; }
+        .modal-content { max-width: 95%; max-height: 85vh; border-radius: 8px; }
+        .modal-close { position: absolute; top: 20px; right: 25px; color: white; font-size: 2.2rem; cursor: pointer; }
+        
+        .map-frame { width: 100%; height: 300px; border: 0; border-radius: 12px; }
+        
+        .rating-select { display: flex; gap: 0.3rem; margin-bottom: 1rem; cursor: pointer; }
+        .star-icon { font-size: 1.8rem; color: #cbd5e1; }
+        .star-icon.active { color: var(--gold); }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.3rem; }
+        .form-control { width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-size: 0.95rem; outline: none; }
+        .btn-submit { background: var(--primary); color: white; border: none; padding: 0.8rem; font-weight: 600; border-radius: 8px; cursor: pointer; width: 100%; font-size: 0.95rem; }
+        
+        .comment-item { border-bottom: 1px solid var(--border); padding: 0.9rem 0; }
+        .comment-header { display: flex; justify-content: space-between; margin-bottom: 0.2rem; }
+        .comment-author { font-weight: 600; font-size: 0.95rem; }
+        .comment-stars { color: var(--gold); font-size: 0.9rem; }
+        .comment-text { font-size: 0.9rem; }
+        .comment-date { font-size: 0.75rem; color: var(--sub); }
+        
+        /* Kartu Pesan Pengembang */
+        .dev-note-card {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 16px;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .dev-note-card p {
+            color: #1e40af;
+            font-size: 0.93rem;
+            line-height: 1.6;
+            margin: 0;
+        }
+        
+        .site-footer { 
+            text-align: center; 
+            padding: 2rem 1rem; 
+            background: #1e293b; 
+            color: #94a3b8; 
+            font-size: 0.85rem; 
+            margin-top: 2rem; 
+            margin-bottom: 0;
+            width: 100%;
+        }
+
+        @media (min-width: 600px) {
+            .carousel-container { height: 350px; }
+            .map-frame { height: 380px; }
+            .banner h1 { font-size: 2rem; }
+            .logo-text { font-size: 1.15rem; }
+        }
+
+        @media (min-width: 900px) {
+            .carousel-container { height: 460px; }
+            .map-frame { height: 450px; }
+            .card { padding: 2rem; }
+            .banner { padding: 3rem 2.5rem; }
+            .banner h1 { font-size: 2.4rem; }
+            .banner p { font-size: 1.05rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="nav">
+            <div class="logo-container">
+                <div class="logo-icon">🏡</div>
+                <div class="logo-text">
+                    Prima <span>Mekarsari</span>
+                </div>
+            </div>
+            <div class="location-badge">
+                <span class="pulse-dot"></span>
+                Rajeg, Tangerang
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="banner reveal">
+            <h1>Perumahan Prima Mekarsari Rajeg</h1>
+            <p>Pusat informasi publik, galeri foto dokumentasi lapangan, petunjuk arah Google Maps, dan ulasan pengunjung.</p>
+        </div>
+
+        <div class="card reveal">
+            <h2>ℹ️ Informasi & Deskripsi Umum</h2>
+            <p style="color: var(--sub); font-size: 0.95rem;">
+                Perumahan Prima Mekarsari merupakan salah satu kawasan pemukiman di Rajeg, Kabupaten Tangerang. Halaman ini disediakan sebagai panduan independen untuk melihat kondisi lingkungan dan akses ke lokasi.
+            </p>
+            <div class="info-grid" style="margin-top: 1.2rem;">
+                <div class="info-item"><small>Lokasi Wilayah</small><span>Rajeg, Kab. Tangerang</span></div>
+                <div class="info-item"><small>Tipe Kawasan</small><span>Pemukiman Warga</span></div>
+                <div class="info-item"><small>Akses Utama</small><span>Jl. Raya Mekarsari, Rajeg - Mauk</span></div>
+                <div class="info-item"><small>Fasilitas Sekitar</small><span>Pasar, Sekolah, Minimarket</span></div>
+            </div>
+        </div>
+
+        <div class="card reveal">
+            <h2>📸 Galeri Foto Lapangan (Otomatis & Klik)</h2>
+            <p style="font-size: 0.85rem; color: var(--sub); margin-bottom: 0.8rem;">Foto bergeser otomatis. Ketuk/klik foto untuk memperbesar tampilan.</p>
+            <div class="carousel-container">
+                <button class="carousel-btn prev" onclick="moveSlide(-1)">❮</button>
+                <button class="carousel-btn next" onclick="moveSlide(1)">❯</button>
+                <div class="carousel-track" id="carouselTrack">
+                    <!-- Foto 1: Gerbang Utama -->
+                    <div class="carousel-slide" onclick="openModal('https://i.ibb.co.com/nNXYjhFK/foto1.jpg')">
+                        <img src="https://i.ibb.co.com/nNXYjhFK/foto1.jpg" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800';" alt="Gerbang Utama Prima Mekarsari">
+                        <div class="carousel-caption"><h4>Gerbang Utama & Akses Masuk</h4></div>
+                    </div>
+                    <!-- Foto 2: Tipe Rumah Sederhana -->
+                    <div class="carousel-slide" onclick="openModal('https://i.ibb.co.com/KpLPfRNq/foto2.jpg')">
+                        <img src="https://i.ibb.co.com/KpLPfRNq/foto2.jpg" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=800';" alt="Tipe Rumah Sederhana">
+                        <div class="carousel-caption"><h4>Tipe Rumah Sederhana (Subsidi)</h4></div>
+                    </div>
+                    <!-- Foto 3: Deretan Bangunan Baru -->
+                    <div class="carousel-slide" onclick="openModal('https://i.ibb.co.com/1YpkZkC7/foto3.jpg')">
+                        <img src="https://i.ibb.co.com/1YpkZkC7/foto3.jpg" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800';" alt="Deretan Bangunan Baru">
+                        <div class="carousel-caption"><h4>Deretan Bangunan Baru & Jalan Blok</h4></div>
+                    </div>
+                    <!-- Foto 4: Suasana Lingkungan Sekitar -->
+                    <div class="carousel-slide" onclick="openModal('https://i.ibb.co.com/VcckLPPm/foto4.jpg')">
+                        <img src="https://i.ibb.co.com/VcckLPPm/foto4.jpg" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800';" alt="Suasana Lingkungan Sekitar">
+                        <div class="carousel-caption"><h4>Suasana Lingkungan Sekitar Perumahan</h4></div>
+                    </div>
+                </div>
+                <div class="carousel-dots" id="carouselDots">
+                    <span class="dot active" onclick="goToSlide(0)"></span>
+                    <span class="dot" onclick="goToSlide(1)"></span>
+                    <span class="dot" onclick="goToSlide(2)"></span>
+                    <span class="dot" onclick="goToSlide(3)"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card reveal">
+            <h2>📍 Petunjuk Lokasi & Google Maps Real-Time</h2>
+            <iframe class="map-frame" src="https://maps.google.com/maps?q=Perumahan%20Prima%20Mekarsari%20Rajeg&t=&z=15&ie=UTF8&iwloc=&output=embed" loading="lazy"></iframe>
+        </div>
+
+        <div class="card reveal">
+            <h2>⭐ Tulis Ulasan & Komentar</h2>
+            <form id="commentForm">
+                <div class="form-group">
+                    <label>Rating:</label>
+                    <div class="rating-select" id="starRating">
+                        <span class="star-icon active" data-rating="1">★</span>
+                        <span class="star-icon active" data-rating="2">★</span>
+                        <span class="star-icon active" data-rating="3">★</span>
+                        <span class="star-icon active" data-rating="4">★</span>
+                        <span class="star-icon active" data-rating="5">★</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="userName">Nama:</label>
+                    <input type="text" id="userName" class="form-control" placeholder="Nama Anda" required>
+                </div>
+                <div class="form-group">
+                    <label for="userComment">Ulasan:</label>
+                    <textarea id="userComment" class="form-control" rows="3" placeholder="Tulis ulasan lokasi..." required></textarea>
+                </div>
+                <button type="submit" class="btn-submit">Kirim Ulasan</button>
+            </form>
+        </div>
+
+        <div class="card reveal">
+            <h2>💬 Ulasan Warga (<span id="commentCount">0</span>)</h2>
+            <div id="commentList"></div>
+        </div>
+
+        <div class="dev-note-card reveal">
+            <p>Mohon maaf atas kekurangannya, karena masih di tahap pengembangan. Silahkan tinggalkan komentar atau kritikan dan tetap sopan, agar dapat membantu kami dalam pengembangan websitenya.<br><br>Terimakasih 🙏🏻</p>
+        </div>
+    </div>
+
+    <div class="modal" id="imageModal">
+        <span class="modal-close" onclick="closeModal()">&times;</span>
+        <img class="modal-content" id="modalImg">
+    </div>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Perumahan Prima Mekarsari Rajeg. Hak Cipta Dilindungi Undang-Undang.</p>
+    </footer>
+
+    <script>
+        const reveals = document.querySelectorAll('.reveal');
+        function checkReveal() {
+            reveals.forEach(el => {
+                const elementTop = el.getBoundingClientRect().top;
+                const windowHeight = window.innerHeight;
+                
+                if (elementTop < windowHeight - 50 && elementTop > -el.offsetHeight + 50) {
+                    el.classList.add('active');
+                } else {
+                    el.classList.remove('active');
+                }
+            });
+        }
+        window.addEventListener('scroll', checkReveal);
+        window.addEventListener('load', checkReveal);
+
+        let slideIdx = 0;
+        const track = document.getElementById('carouselTrack');
+        const dots = document.querySelectorAll('.dot');
+        const totalSlides = dots.length;
+        let timer;
+
+        function updateSlide() {
+            if (track) track.style.transform = `translateX(-${slideIdx * 100}%)`;
+            dots.forEach((d, i) => d.classList.toggle('active', i === slideIdx));
+        }
+        function moveSlide(dir) {
+            slideIdx = (slideIdx + dir + totalSlides) % totalSlides;
+            updateSlide();
+            resetTimer();
+        }
+        function goToSlide(i) {
+            slideIdx = i;
+            updateSlide();
+            resetTimer();
+        }
+        function startTimer() { timer = setInterval(() => { moveSlide(1); }, 3500); }
+        function resetTimer() { clearInterval(timer); startTimer(); }
+        startTimer();
+
+        function openModal(src) {
+            document.getElementById('imageModal').style.display = 'flex';
+            const imgElement = document.getElementById('modalImg');
+            imgElement.src = src;
+            imgElement.onerror = function() {
+                this.src = 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=1000';
+            };
+            clearInterval(timer);
+        }
+        function closeModal() {
+            document.getElementById('imageModal').style.display = 'none';
+            startTimer();
+        }
+
+        let rating = 5;
+        const stars = document.querySelectorAll('#starRating .star-icon');
+        stars.forEach(s => {
+            s.addEventListener('click', () => {
+                rating = parseInt(s.dataset.rating);
+                stars.forEach(st => st.classList.toggle('active', parseInt(st.dataset.rating) <= rating));
+            });
+        });
+
+        const defaultData = [
+            { name: "Rian Hidayat", rating: 5, text: "Akses lokasi gampang dicari di Google Maps.", date: "25 Okt 2026" },
+            { name: "Dewi P.", rating: 4, text: "Lingkungannya tenang dan bersih.", date: "12 Okt 2026" }
+        ];
+
+        function loadComments() {
+            const list = JSON.parse(localStorage.getItem('pm_comments')) || defaultData;
+            document.getElementById('commentCount').textContent = list.length;
+            const container = document.getElementById('commentList');
+            container.innerHTML = list.map(item => `
+                <div class="comment-item">
+                    <div class="comment-header">
+                        <span class="comment-author">${item.name}</span>
+                        <span class="comment-stars">${'★'.repeat(item.rating)}${'☆'.repeat(5-item.rating)}</span>
+                    </div>
+                    <div class="comment-text">${item.text}</div>
+                    <div class="comment-date">${item.date}</div>
+                </div>
+            `).join('');
+        }
+
+        document.getElementById('commentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('userName').value;
+            const text = document.getElementById('userComment').value;
+            const date = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+            const list = JSON.parse(localStorage.getItem('pm_comments')) || defaultData;
+            list.unshift({ name, rating, text, date });
+            localStorage.setItem('pm_comments', JSON.stringify(list));
+            this.reset();
+            rating = 5;
+            stars.forEach(s => s.classList.add('active'));
+            loadComments();
+        });
+
+        loadComments();
+    </script>
+</body>
+</html>
